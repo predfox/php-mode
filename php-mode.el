@@ -590,7 +590,15 @@ might be to handle switch and goto labels differently."
   "Line up chained methods using `c-lineup-cascaded-calls',
 but only if the setting is enabled"
   (if php-lineup-cascaded-calls
-    (c-lineup-cascaded-calls langelem)))
+      (c-lineup-cascaded-calls langelem)
+    (when (string= c-indentation-style "psr2")
+      (save-excursion
+        (back-to-indentation)
+        (unless (php-in-string-or-comment-p)
+          (when (looking-at-p "-\\s-*>")
+            (goto-char (cdr langelem))
+            (let ((col (current-indentation)))
+              (vector (+ col c-basic-offset)))))))))
 
 (c-add-style
  "php"
